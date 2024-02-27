@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 #This script information about a file
 
 if [ -e "$1" ]; then
