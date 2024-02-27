@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #Bash script displays time for 12 hours and 59 minutes
 
-hour=1
+hour=0
 
 while [ $hour -lt 12 ]
 do
