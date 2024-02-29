@@ -3,4 +3,4 @@
 # It only shows listening ports
 # It shows the PID  and name of the program to which each socket belongs
 
-netstat
+netstat tulp
