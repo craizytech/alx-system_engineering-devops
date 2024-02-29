@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#This script configures an ubuntu server with the following requirements
+# This script configures an ubuntu server with the following requirements
 
 cp /etc/hosts ~/hosts.new
 
