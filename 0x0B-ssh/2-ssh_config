@@ -1,5 +1,5 @@
 Host remote_server
-	HostName 54.145.241.57
+	HostName 34.205.65.3
 	User "ubuntu"
 	IdentityFile ~/.ssh/school
 	PasswordAuthentication no
