@@ -7,7 +7,7 @@ file { '.ssh/config':
   group   => cr,
   content => "
 Host remote_server
-  HostName 34.205.65.3
+  HostName 54.237.208.13
   User "ubuntu"
   IdentityFile ~/.ssh/school
   PasswordAuthentication no
