@@ -1,15 +1,24 @@
-#!/usr/bin/env bash
-# This script installs nginx on a server
+#!/user/bin/env bash
+
+# Update package list and install Nginx
 apt-get update
-apt install -y nginx
+apt-get install -y nginx
 
-echo "Hello World!" > sudo tee /var/www/html/index.nginx-debian.html
-printf %s "server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	root var/www/html;
-	index index.html index.htm index.nginx-debian.html
-}
-" > /etc/nginx/sites-available/default
+# Modify Nginx configuration to listen on port 80
+echo "server {
+    listen 80;
+    server_name _;
+    location / {
+        root /var/www/html;
+    }
+}" > /etc/nginx/sites-available/default
 
-service nginx restart
+# Restart Nginx (without using systemctl)
+killall -s HUP nginx
+
+# Create a simple HTML page with "Hello World!"
+echo "<html><body>Hello World!</body></html>" > /var/www/html/index.html
+
+# Script execution completed
+echo "Nginx installed and configured successfully."
+
