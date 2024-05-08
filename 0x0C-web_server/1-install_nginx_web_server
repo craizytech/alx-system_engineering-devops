@@ -7,5 +7,17 @@ sudo ufw allow 'Nginx HTTP'
 # Modify Nginx configuration to listen on port 80 and serve hello world at root
 sudo bash -c 'echo "Hello World!" > /var/www/html/index.nginx-debian.html'
 
+printf %s "server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	root /var/www/html;
+	index index.nginx-debian.html
+	server_name _;
+
+	location / {
+	try_files $uri $uri/ =404;
+	}
+" > /etc/nginx/sites-available/default;
+
 # Restart nginx
 sudo service nginx start
