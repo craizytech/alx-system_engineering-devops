@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# This script installs nginx on a server
+echo "Updating the cache"
+sudo apt-get update
+echo "Installing Nginx"
+sudo apt install -y nginx
+echo "copying hello world to the default file"
+
+echo "Hello world!" > sudo tee /var/www/html/index.nginx-debian.html
+printf %s "server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	root var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+
+	location / {
+	try_files $uri $uri/ =404;
+	}
+	location = / {
+		return 200 "Hello World!";
+	}
+}
+" > /etc/nginx/sites-available/default
+
+service nginx restart
