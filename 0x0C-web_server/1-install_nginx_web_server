@@ -15,6 +15,14 @@ printf %s "server {
 
 	location / {
 	try_files $uri $uri/ =404;
-}" > /etc/nginx/sites-available/default
+	}
+	location = / {
+		echo "HTTP/1.1 200 OK";
+		echo "Content-Type: text/html";
+		echo "";
+		echo "Hello World!";
+	}
+}
+" > /etc/nginx/sites-available/default
 
 service nginx restart
