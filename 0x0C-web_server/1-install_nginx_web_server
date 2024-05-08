@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Update package list and install Nginx
-apt-get update
-apt-get install -y nginx
+sudo apt-get update
+sudo apt-get install -y nginx
 sudo ufw allow 'Nginx HTTP'
 
 # Modify Nginx configuration to listen on port 80 and serve hello world at root
