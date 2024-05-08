@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 # This script installs nginx on a server
-echo "Updating the cache"
-sudo apt-get update
-echo "Installing Nginx"
-sudo apt install -y nginx
-echo "copying hello world to the default file"
+apt-get update
+apt install -y nginx
 
-echo "Hello world!" > sudo tee /var/www/html/index.nginx-debian.html
+echo "Hello World!" > sudo tee /var/www/html/index.nginx-debian.html
 printf %s "server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
