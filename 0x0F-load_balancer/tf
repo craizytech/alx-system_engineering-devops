@@ -1,0 +1,11 @@
+#!/bin/bash
+# This script transfers files to the three servers that i have
+
+PATH="~/alx-system-engineering-devops/0x0C-web_server/0-transfer_file"
+PATH_TO_SSH="~/.ssh/
+
+if [ "$#" -ne 2 ]; then
+	echo "Usage: tf <file_name>:"
+	exit 1;
+else
+	scp -o StrictHostKeyChecking=no -i 
