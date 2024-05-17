@@ -1,0 +1,17 @@
+#!/bin/bash
+# This script configures HAProxy on a server
+
+sudo apt update
+sudo apt install -y haproxy
+sudo systemctl enable haproxy
+sudo systemctl start haproxy
+
+sudo echo "
+frontend myfrontend
+	bind 54.87.159.58:80
+	default_backend myservers
+
+backend myservers
+	server server1 35.153.192.153:80
+	server server2 52.87.154.41:80
+" >> /etc/haproxy/haproxy.cfg
