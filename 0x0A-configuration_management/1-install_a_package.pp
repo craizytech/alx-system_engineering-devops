@@ -15,7 +15,7 @@ package { 'flask':
 # we are getting a werkzeug error so we have to add the compatible
 # werkzeug version for flask 2.10
 package { 'werkzeug':
-  ensure => '2.0.3',
+  ensure   => '2.0.3',
   provider => 'pip3',
-  require => Package['flask']
+  require  => Package['flask']
 }
