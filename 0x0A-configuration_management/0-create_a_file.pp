@@ -1,3 +1,4 @@
+# This file creates a file school and sets its permissions
 file {'/tmp/school':
 	path => '/tmp/school',
 	ensure => present,
