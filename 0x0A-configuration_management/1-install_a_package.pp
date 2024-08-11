@@ -7,7 +7,7 @@ package { 'python3-pip':
 
 # ensure flask version 2.1.0 is installed via pip3
 package { 'flask':
-  ensure   => installed,
+  ensure   => '2.1.0',
   provider => 'pip3',
   require  => Package['python3-pip']
 }
