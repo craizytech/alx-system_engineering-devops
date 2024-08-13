@@ -1,47 +1,81 @@
-# Installing and configuring nginx with puppet
+# add stable version of nginx
+exec { 'add nginx stable repo':
+  command => 'sudo add-apt-repository ppa:nginx/stable',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# update software packages list
+exec { 'update packages':
+  command => 'apt-get update',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# install nginx
 package { 'nginx':
-    ensure => installed,
+  ensure     => 'installed',
 }
 
-# Ensure the index.html file exists with the content "Hello World!"
+# allow HTTP
+exec { 'allow HTTP':
+  command => "ufw allow 'Nginx HTTP'",
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  onlyif  => '! dpkg -l nginx | egrep \'îi.*nginx\' > /dev/null 2>&1',
+}
+
+# change folder rights
+exec { 'chmod www folder':
+  command => 'chmod -R 755 /var/www',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# create index file
 file { '/var/www/html/index.html':
-    ensure  => file,
-    content => 'Hello World',
-    mode    => '0644'
+  content => "Hello World!\n",
 }
 
-# Ensure the Nginx service is running
-service { 'nginx':
-    ensure => running,
-    enable => true,
+# create index file
+file { '/var/www/html/404.html':
+  content => "Ceci n'est pas une page\n",
 }
 
-# Nginx configuration file to handle redirection and root request
-file { '/etc/nginx/sites-available/default':
-    ensure  => file,
-    content => "
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+# add redirection and error page
+file { 'Nginx default config file':
+  ensure  => file,
+  path    => '/etc/nginx/sites-enabled/default',
+  content =>
+"server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
 
-    # Serve 'Hello World!' at the root
-    location / {
-        root /var/www/html;
-        index index.html
-    }
+	root /var/www/html;
+	index index.html;
+	
+	server_name _;
+	
+	location /redirect_me {
+		return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+	}
 
-    # Redirect /redirect_me to the root with a 301 moved permanently
-    location /redirect_me {
-        return 301 /;
-    }
+	location / {
+		try_files \$uri \$uri/ =404;
+	}
+
+	error_page 404 /404.html;
+
+	location = /404.html {
+		internal;
+	}
 }
 ",
-    notify  => Service['nginx'], # Notify the Nginx service to reload when this file changes
+}
+# restart nginx
+exec { 'restart service':
+  command => 'service nginx restart',
+  path    => '/usr/bin:/usr/sbin:/bin',
 }
 
-# Ensure the Nginx configuration is valid
-exec { 'nginx -t':
-    command => 'nginx -t',
-    path    => ['/usr/bin', '/usr/sbin'],
-    notify  => Service['nginx'] # Notify the Nginx service to reload if the config test passes
+# start service nginx
+service { 'nginx':
+  ensure  => running,
+  require => Package['nginx'],
 }
