@@ -1,35 +1,15 @@
-# This puppet makes changes to the client configuration file
-
-# Install openssh-client that includes the ssh-keygen
-package { 'openssh-client':
-    ensure => installed
+# Ensure the ssh client uses the specified private key
+file_line { 'Declare identity file':
+    ensure => present,
+    line   => ' IdentityFile ~/.ssh/school',
+    path   => '/etc/ssh/ssh_config',
+    match  => '^#?IdentityFile'
 }
 
-# Generate the ssh key-pair using ssh-keygen
-exec { 'generate_ssh_key':
-    command => 'ssh-keygen -t rsa -b 4096 -f /home/ubuntu/.ssh/school -N "betty"',
-    creates => '/home/ubuntu/.ssh/school',
-    require => Package['openssh-client'],
-    user    => 'ubuntu'
-}
-
-# Ensure the .ssh directory exists
-file { '/home/ubuntu/.ssh':
-    ensure => directory,
-    owner  => 'ubuntu',
-    group  => 'ubuntu',
-    mode   => '0700',
-}
-
-# create and modify the config file
-file { '/home/ubuntu/.ssh/config':
-    ensure  => file,
-    owner   => 'ubuntu',
-    group   => 'ubuntu',
-    mode    => '0600',
-    content => 'Host remote_server
-    HostName 100.24.72.103
-    User ubuntu
-    IdentityFile /home/ubuntu/.ssh/school
-    PasswordAuthentication no'
+# Ensure password authentication is disabled
+file_line { 'Turn off passwd auth':
+    ensure => present,
+    path   => '/etc/ssh/ssh_config',
+    line   => '  PasswordAuthentication no',
+    match  => '^#?PasswordAuthentication'
 }
