@@ -2,14 +2,21 @@
 # This bash script takes on a domain and displays information about it.
 
 find_domain_details() {
+	# Get the domains that were captured
+	domain=$1
 
-	# Capture the ouput of the dig command into a variable
-	dig_output=$(dig "$1")
-	
-	# use awk to process the dig output
-	result=$(echo "$dig_output" | awk '/ANSWER SECTION:/ {getline; print $1 " is a " $4 " Record and is located in " $5}')
+	# list the subdomains
+	subdomains=("www" "lb-01" "web-01" "web-02")
 
-	echo "$result"
+	# iterate through the subdomains and perform dig for each
+	for sub in "${subdomains[@]}"; do
+		# Capture the ouput of the dig command into a variable
+		dig_output=$(dig "${sub}.${domain}")
+
+		# use awk to process the dig output
+		result=$(echo "$dig_output" | awk '/ANSWER SECTION:/ {getline; print "The subdomain " $1 " is a " $4 " and points to " $5}')
+		echo "$result"
+	done
 }
 
 find_domain_details "$1"
