@@ -1,22 +1,34 @@
 #!/usr/bin/env bash
-# This bash script takes on a domain and displays information about it.
+# This bash script takes a domain and optionally a subdomain and displays information about them.
 
 find_domain_details() {
-	# Get the domains that were captured
-	domain=$1
+    domain=$1
+    subdomain=$2
 
-	# list the subdomains
-	subdomains=("www" "lb-01" "web-01" "web-02")
+    if [ -z "$subdomain" ]; then
+        # List of subdomains to check when no specific subdomain is given
+        subdomains=("www" "lb-01" "web-01" "web-02")
+    else
+        subdomains=("$subdomain")
+    fi
 
-	# iterate through the subdomains and perform dig for each
-	for sub in "${subdomains[@]}"; do
-		# Capture the ouput of the dig command into a variable
-		dig_output=$(dig "${sub}.${domain}")
+    for sub_domain in "${subdomains[@]}"; do
+        # Perform the dig command for each subdomain
+        dig_output=$(dig "${sub_domain}.${domain}" | grep -A1 'ANSWER SECTION:')
 
-		# use awk to process the dig output
-		result=$(echo "$dig_output" | awk '/ANSWER SECTION:/ {getline; print "The subdomain " $1 " is a " $4 " and points to " $5}')
-		echo "$result"
-	done
+        # Use awk to process the dig output
+        result=$(echo "$dig_output" | awk -v sub_domain="$sub_domain" -v domain="$domain" '
+            /ANSWER SECTION:/ {getline; print "The subdomain " sub_domain " is a " $4 " record and points to " $5}'
+        )
+
+        echo "$result"
+    done
 }
 
-find_domain_details "$1"
+# Ensure domain parameter is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 domain [subdomain]"
+    exit 1
+fi
+
+find_domain_details "$1" "$2"
