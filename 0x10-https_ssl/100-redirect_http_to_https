@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# This bash script installs and configures HAProxy on a server
+
+# update the package list
+apt-get update
+
+# install HAProxy
+apt-get install -y haproxy
+
+# start haproxy and enable it to start on boot
+systemctl start haproxy
+systemctl enable haproxy
+
+# PATH to the ssl certificates and key
+CERT_PATH="/etc/haproxy/certs/eammon.tech.pem"
+
+echo "
+# Global settings
+global
+	log /dev/log local0
+	log /dev/log local1 notice
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+	maxconn 2048
+	tune.ssl.default-dh-param 2048
+
+# Default settings
+defaults
+	log global
+	option httplog
+	option forwardfor
+	option http-server-close
+	option dontlognull
+	timeout connect 5000ms
+	timeout client  50000ms
+	timeout server  50000ms
+
+
+# Frontend Configuration for HTTP
+frontend http_front
+	mode http
+	bind *:80
+	redirect scheme https code 301 if !{ ssl_fc }
+
+# Frontend Configuration for HTTPS
+frontend https_front
+	mode http
+	bind *:443 ssl crt $CERT_PATH
+	default_backend web_servers
+
+# Backend configuration
+backend web_servers
+	mode http
+	balance roundrobin
+	server web-01 100.24.72.103:80 check
+	server web-02 54.237.32.252:80 check
+" > /etc/haproxy/haproxy.cfg
+
+# check the configuration for errors
+haproxy -c -f /etc/haproxy/haproxy.cfg
+
+# restart HAProxy to apply changes
+service haproxy restart
