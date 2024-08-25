@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# This bash script takes on a domain and displays information about it.
+
+find_domain_details() {
+
+	# Capture the ouput of the dig command into a variable
+	dig_output=$(dig $1)
+	
+	# use awk to process the dig output
+	result=$(echo "$dig_output" | awk '/ANSWER SECTION:/ {getline; print $1 " is a " $4 " Record and is located in " $5}')
+
+	echo "$result"
+}
+
+find_domain_details "$1"
